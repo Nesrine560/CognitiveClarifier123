@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { User } from "@/types";
+import { apiRequest } from "@/lib/queryClient";
+import { getCBTAnalysis } from "@/lib/openai";
 
 interface Message {
   id: string;
@@ -15,12 +17,44 @@ interface AICopilotProps {
   user: User;
 }
 
+// CBT structured flow steps
+enum CBTStep {
+  INITIAL = "initial",
+  SITUATION = "situation",
+  EMOTION = "emotion",
+  THOUGHT = "thought",
+  CHALLENGE = "challenge",
+  REFRAME = "reframe",
+  COMPLETE = "complete"
+}
+
+// CBT session data
+interface CBTSession {
+  active: boolean;
+  currentStep: CBTStep;
+  situation: string;
+  emotion: string;
+  emotionIntensity?: number;
+  thought: string;
+  challenge?: string;
+  reframe?: string;
+}
+
 export default function AICopilot({ user }: AICopilotProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // CBT session state
+  const [cbtSession, setCbtSession] = useState<CBTSession>({
+    active: false,
+    currentStep: CBTStep.INITIAL,
+    situation: "",
+    emotion: "",
+    thought: "",
+  });
   
   // Scroll to bottom of messages when new messages are added
   useEffect(() => {
@@ -34,7 +68,7 @@ export default function AICopilot({ user }: AICopilotProps) {
         {
           id: "welcome",
           sender: "ai",
-          text: `Hi ${user.name || "there"}! I'm your mental wellness assistant. How can I help you today?`,
+          text: `Bonjour ${user.name || "there"}! Je suis votre assistant de bien-être mental. Comment puis-je vous aider aujourd'hui?`,
           timestamp: new Date()
         }
       ]);
@@ -53,39 +87,106 @@ export default function AICopilot({ user }: AICopilotProps) {
     };
     
     setMessages(prev => [...prev, userMessage]);
+    
+    // Save user input based on current CBT step if in active session
+    if (cbtSession.active) {
+      processCBTResponse(input);
+    }
+    
     setInput("");
     
     // Simulate AI thinking
     setIsTyping(true);
     
-    // This would be replaced with an actual AI response API call
+    // Generate response based on session state
     setTimeout(() => {
-      respondToMessage(input);
+      if (cbtSession.active) {
+        generateNextCBTPrompt();
+      } else {
+        respondToMessage(input);
+      }
       setIsTyping(false);
     }, 1500);
   };
   
-  const respondToMessage = (userInput: string) => {
-    // Very simple pattern matching for demo purposes
-    // In a real app, this would call an API endpoint to process the message
+  // Process user's response in CBT flow
+  const processCBTResponse = (userInput: string) => {
+    switch (cbtSession.currentStep) {
+      case CBTStep.SITUATION:
+        setCbtSession(prev => ({ ...prev, situation: userInput, currentStep: CBTStep.EMOTION }));
+        break;
+      case CBTStep.EMOTION:
+        setCbtSession(prev => ({ ...prev, emotion: userInput, currentStep: CBTStep.THOUGHT }));
+        break;
+      case CBTStep.THOUGHT:
+        setCbtSession(prev => ({ ...prev, thought: userInput, currentStep: CBTStep.CHALLENGE }));
+        break;
+      case CBTStep.CHALLENGE:
+        setCbtSession(prev => ({ ...prev, challenge: userInput, currentStep: CBTStep.REFRAME }));
+        break;
+      case CBTStep.REFRAME:
+        setCbtSession(prev => ({ ...prev, reframe: userInput, currentStep: CBTStep.COMPLETE }));
+        // Here we would save the complete CBT entry
+        saveCBTJournalEntry();
+        break;
+    }
+  };
+  
+  // Generate the next prompt in the CBT flow
+  const generateNextCBTPrompt = async () => {
     let response = "";
     
-    const lowerInput = userInput.toLowerCase();
-    
-    if (lowerInput.includes("anxious") || lowerInput.includes("anxiety")) {
-      response = "I understand how anxiety can feel overwhelming. Would you like to try a quick breathing exercise to help calm your nerves, or would you prefer to talk more about what's causing your anxiety?";
-    } else if (lowerInput.includes("sad") || lowerInput.includes("depressed")) {
-      response = "I'm sorry to hear you're feeling down. Remember that emotions are temporary and it's okay to feel sad sometimes. Would it help to talk about what's contributing to these feelings?";
-    } else if (lowerInput.includes("stressed") || lowerInput.includes("overwhelmed")) {
-      response = "When you're feeling stressed, it can help to break things down into smaller, manageable tasks. Would you like some techniques for managing stress, or would you like to explore what's causing this feeling?";
-    } else if (lowerInput.includes("breathing") || lowerInput.includes("breathe")) {
-      response = "Breathing exercises can be really helpful! Try the 4-7-8 technique: Inhale for 4 seconds, hold for 7 seconds, then exhale for 8 seconds. Repeat this 4 times and notice how your body feels.";
-    } else if (lowerInput.includes("meditation") || lowerInput.includes("meditate")) {
-      response = "Meditation is a great practice for mental wellness. The app has several guided meditations you can try. Would you like me to recommend one based on how you're feeling?";
-    } else if (lowerInput.includes("hello") || lowerInput.includes("hi")) {
-      response = `Hello ${user.name || "there"}! How are you feeling today? I'm here to support your mental wellness journey.`;
-    } else {
-      response = "Thank you for sharing. Would you like to explore this further, or perhaps try one of our exercises like breathing, meditation, or thought restructuring?";
+    switch (cbtSession.currentStep) {
+      case CBTStep.INITIAL:
+        response = "D'accord, commençons notre exercice de restructuration des pensées. Décrivez d'abord brièvement la situation qui vous préoccupe.";
+        setCbtSession(prev => ({ ...prev, currentStep: CBTStep.SITUATION }));
+        break;
+      
+      case CBTStep.SITUATION:
+        response = "Quelles émotions ressentez-vous face à cette situation? (Par exemple: anxiété, tristesse, colère, frustration...)";
+        break;
+      
+      case CBTStep.EMOTION:
+        response = "Quelles pensées ou croyances vous traversent l'esprit dans cette situation?";
+        break;
+      
+      case CBTStep.THOUGHT:
+        // Analyse AI pour identifier le modèle de pensée et suggérer des défis
+        try {
+          setIsTyping(true);
+          
+          const aiAnalysis = await getCBTAnalysis(
+            cbtSession.situation,
+            cbtSession.emotion,
+            cbtSession.thought
+          );
+          
+          response = `J'ai analysé votre pensée et elle semble correspondre au schéma de "${aiAnalysis.thoughtPattern}". ${aiAnalysis.patternExplanation}\n\nVoici comment nous pourrions la remettre en question: ${aiAnalysis.challenge}\n\nQu'en pensez-vous? Pouvez-vous ajouter votre propre remise en question de cette pensée?`;
+        } catch (error) {
+          console.error("Error analyzing thoughts:", error);
+          response = "Essayons maintenant de remettre en question cette pensée. Quelles preuves avez-vous que cette pensée est vraie ou fausse? Y a-t-il d'autres façons de voir la situation?";
+        }
+        break;
+      
+      case CBTStep.CHALLENGE:
+        response = "Maintenant, essayons de reformuler votre pensée initiale de manière plus équilibrée et réaliste. Quelle serait une perspective alternative plus aidante?";
+        break;
+      
+      case CBTStep.REFRAME:
+        response = "Excellent travail! Vous avez complété l'exercice de restructuration des pensées. Comment vous sentez-vous maintenant par rapport à cette situation?";
+        break;
+      
+      case CBTStep.COMPLETE:
+        response = "Votre exercice de restructuration des pensées a été enregistré dans votre journal. Vous pouvez le consulter à tout moment. Souhaitez-vous explorer autre chose?";
+        // Reset CBT session
+        setCbtSession({
+          active: false,
+          currentStep: CBTStep.INITIAL,
+          situation: "",
+          emotion: "",
+          thought: ""
+        });
+        break;
     }
     
     const aiMessage: Message = {
@@ -96,6 +197,89 @@ export default function AICopilot({ user }: AICopilotProps) {
     };
     
     setMessages(prev => [...prev, aiMessage]);
+  };
+  
+  // Save the complete CBT journal entry
+  const saveCBTJournalEntry = async () => {
+    try {
+      await apiRequest("POST", "/api/journal", {
+        userId: user.id,
+        situation: cbtSession.situation,
+        emotion: cbtSession.emotion,
+        thought: cbtSession.thought,
+        challenge: cbtSession.challenge,
+        reframe: cbtSession.reframe
+      });
+      
+      // Success message is handled in the COMPLETE step
+    } catch (error) {
+      console.error("Error saving journal entry:", error);
+      
+      const errorMessage: Message = {
+        id: `ai-error-${Date.now()}`,
+        sender: "ai",
+        text: "Désolé, j'ai rencontré un problème lors de l'enregistrement de votre entrée de journal. Veuillez réessayer plus tard.",
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+  
+  const respondToMessage = (userInput: string) => {
+    // Détection des intentions et génération de réponses
+    let response = "";
+    
+    const lowerInput = userInput.toLowerCase();
+    
+    // Check if user wants to start CBT exercise
+    if (lowerInput.includes("pensée") || lowerInput.includes("restructur") || 
+        lowerInput.includes("cbt") || lowerInput.includes("tcc") || 
+        lowerInput.includes("pensees négatives") || lowerInput.includes("exercice")) {
+      
+      setCbtSession(prev => ({ ...prev, active: true, currentStep: CBTStep.INITIAL }));
+      response = "Je serais ravi de vous guider à travers un exercice de restructuration des pensées. Cela vous aidera à identifier et transformer vos pensées négatives. Êtes-vous prêt à commencer?";
+      
+    } else if (lowerInput.includes("anxieux") || lowerInput.includes("anxiété") || lowerInput.includes("stress")) {
+      response = "Je comprends à quel point l'anxiété peut être accablante. Souhaitez-vous essayer un exercice rapide de respiration pour vous aider à calmer vos nerfs, ou préférez-vous parler davantage de ce qui cause votre anxiété?";
+      
+    } else if (lowerInput.includes("triste") || lowerInput.includes("déprimé")) {
+      response = "Je suis désolé d'apprendre que vous vous sentez mal. Rappelez-vous que les émotions sont temporaires et qu'il est normal de se sentir triste parfois. Voulez-vous parler de ce qui contribue à ces sentiments?";
+      
+    } else if (lowerInput.includes("stressé") || lowerInput.includes("débordé")) {
+      response = "Quand vous vous sentez stressé, il peut être utile de décomposer les choses en tâches plus petites et gérables. Souhaitez-vous des techniques pour gérer le stress, ou préférez-vous explorer ce qui cause ce sentiment?";
+      
+    } else if (lowerInput.includes("respiration") || lowerInput.includes("respirer")) {
+      response = "Les exercices de respiration peuvent vraiment aider! Essayez la technique 4-7-8: Inspirez pendant 4 secondes, retenez pendant 7 secondes, puis expirez pendant 8 secondes. Répétez cela 4 fois et remarquez comment votre corps se sent.";
+      
+    } else if (lowerInput.includes("méditation") || lowerInput.includes("méditer")) {
+      response = "La méditation est une excellente pratique pour le bien-être mental. L'application propose plusieurs méditations guidées. Voulez-vous que je vous en recommande une en fonction de ce que vous ressentez?";
+      
+    } else if (lowerInput.includes("bonjour") || lowerInput.includes("salut")) {
+      response = `Bonjour ${user.name || "there"}! Comment vous sentez-vous aujourd'hui? Je suis là pour soutenir votre parcours de bien-être mental.`;
+      
+    } else if (lowerInput.includes("obiectif") || lowerInput.includes("but")) {
+      response = "Fixer des objectifs est une excellente façon de progresser. Voulez-vous que je vous aide à définir un objectif de bien-être et à élaborer un plan pour l'atteindre?";
+      
+    } else {
+      response = "Merci de partager. Voulez-vous explorer cela plus en détail, ou peut-être essayer l'un de nos exercices comme la respiration, la méditation ou la restructuration des pensées?";
+    }
+    
+    const aiMessage: Message = {
+      id: `ai-${Date.now()}`,
+      sender: "ai",
+      text: response,
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, aiMessage]);
+    
+    // If starting CBT flow, proceed to first prompt
+    if (cbtSession.active && cbtSession.currentStep === CBTStep.INITIAL) {
+      setTimeout(() => {
+        generateNextCBTPrompt();
+      }, 1500);
+    }
   };
   
   return (
@@ -124,7 +308,7 @@ export default function AICopilot({ user }: AICopilotProps) {
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-lg font-semibold flex items-center">
                   <i className="ri-robot-line text-accent-500 mr-2"></i>
-                  AI Mental Coach
+                  Coach Mental IA
                 </h2>
                 <Button 
                   variant="ghost" 
@@ -180,7 +364,7 @@ export default function AICopilot({ user }: AICopilotProps) {
               <div className="flex">
                 <Input
                   type="text"
-                  placeholder="Type your message..."
+                  placeholder="Écrivez votre message..."
                   className="rounded-r-none"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
