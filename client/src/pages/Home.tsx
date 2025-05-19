@@ -10,6 +10,7 @@ import ThoughtPatterns from "@/components/ThoughtPatterns";
 import CBTJournal from "@/components/CBTJournal";
 import Meditation from "@/components/Meditation";
 import GroundingExercise from "@/components/GroundingExercise";
+import GoalSetting from "@/components/GoalSetting";
 import AICopilot from "@/components/AICopilot";
 import { useBreathingExercises } from "@/hooks/use-breathing-exercises";
 
@@ -37,9 +38,14 @@ export default function Home({ user }: HomeProps) {
         <MoodTracker user={user} />
       </section>
       
-      {/* Nouveau graphique d'évolution de l'humeur */}
+      {/* Graphique d'évolution de l'humeur */}
       <section className="mb-8">
         <MoodChart user={user} />
+      </section>
+      
+      {/* Nouvelle section des objectifs */}
+      <section className="mb-8">
+        <GoalSetting user={user} />
       </section>
       
       <section className="space-y-6">
