@@ -1,0 +1,102 @@
+🧠✨ Expanded Features for MindJourney
+1. 🧠 CBT Thought Restructuring (core)
+Already built: situation → emotion → thought → challenge → reframe.
+
+AI-guided maieutic dialogue.
+
+2. 🔁 Habit Tracker
+Helps users build emotional resilience through daily habits.
+
+Customizable daily/weekly habits (sleep early, walk, journal, no phone at dinner, etc.)
+
+Progress streaks
+
+Affirmations after completion
+
+Notification reminders
+
+3. 🌬️ Breathing & Grounding Techniques
+To reduce anxiety and bring calm.
+
+4-7-8 breathing (inhale 4s, hold 7s, exhale 8s)
+
+Box breathing (4-4-4-4)
+
+Visual timer with animation (circle expansion/contraction)
+
+Grounding exercise: "Name 5 things you can see..." (5-4-3-2-1 technique)
+
+4. 🧘 Meditation & Mindfulness
+Support for emotional regulation and clarity.
+
+Short guided meditations (2–5 min)
+
+Categories: Sleep, Anxiety, Focus, Gratitude
+
+Daily mindfulness challenges
+
+AI-generated affirmations
+
+5. 📔 Mood & Emotion Journal
+Track moods over time and reflect.
+
+Daily check-in: How are you feeling? (emoji + word)
+
+Trigger/Thought/Behavior log
+
+Emotion intensity scale (1–10)
+
+Weekly mood summary (graph)
+
+6. 💭 Automatic Thought Patterns Library
+Let users learn about their own mind.
+
+Educational cards on:
+
+Catastrophizing
+
+Mind reading
+
+Emotional reasoning
+
+Black-and-white thinking
+
+Show real-life examples and how to challenge them
+
+7. 🎧 Self-soothing Audio
+For regulation in tough moments.
+
+Rain sounds, waves, fireplace, Tibetan bowls
+
+Soothing music playlists
+
+Positive affirmations by AI voice (optional)
+
+8. ❤️ Self-Love & Identity Zone
+Help users reconnect with themselves.
+
+Daily “self-worth” exercises
+
+Mirror talk practice (guided)
+
+“Who am I?” journaling prompts
+
+List of personal wins and strengths
+
+9. 💡 AI Copilot (Mental Coach)
+A friendly assistant in the app (text-based AI, powered by Gemini) that can:
+
+Answer questions about emotions
+
+Propose journal prompts
+
+Remind user to breathe or reflect
+
+Say encouraging words
+
+🔐 Optional Future Features
+🔒 Private Vault: lock personal entries with a PIN
+
+🫂 Support Circle: ability to share a reflection with a trusted person
+
+📚 Learn: educational mini-articles on therapy tools, resilience, etc.
