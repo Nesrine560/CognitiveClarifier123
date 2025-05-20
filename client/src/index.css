@@ -3,49 +3,67 @@
 @tailwind utilities;
 
 :root {
-      --background: 0 0% 100%;
---foreground: 20 14.3% 4.1%;
---muted: 60 4.8% 95.9%;
---muted-foreground: 25 5.3% 44.7%;
---popover: 0 0% 100%;
---popover-foreground: 20 14.3% 4.1%;
---card: 0 0% 100%;
---card-foreground: 20 14.3% 4.1%;
---border: 20 5.9% 90%;
---input: 20 5.9% 90%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 60 4.8% 95.9%;
---secondary-foreground: 24 9.8% 10%;
---accent: 60 4.8% 95.9%;
---accent-foreground: 24 9.8% 10%;
---destructive: 0 84.2% 60.2%;
---destructive-foreground: 60 9.1% 97.8%;
---ring: 20 14.3% 4.1%;
---radius: 0.5rem;
-  }
-  .dark {
-      --background: 240 10% 3.9%;
---foreground: 0 0% 98%;
---muted: 240 3.7% 15.9%;
---muted-foreground: 240 5% 64.9%;
---popover: 240 10% 3.9%;
---popover-foreground: 0 0% 98%;
---card: 240 10% 3.9%;
---card-foreground: 0 0% 98%;
---border: 240 3.7% 15.9%;
---input: 240 3.7% 15.9%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 240 3.7% 15.9%;
---secondary-foreground: 0 0% 98%;
---accent: 240 3.7% 15.9%;
---accent-foreground: 0 0% 98%;
---destructive: 0 62.8% 30.6%;
---destructive-foreground: 0 0% 98%;
---ring: 240 4.9% 83.9%;
---radius: 0.5rem;
-  }
+  /* Couleurs de base plus douces et apaisantes */
+  --background: 210 40% 98%;
+  --foreground: 215 25% 27%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215 25% 40%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 25% 27%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 27%;
+
+  /* Bordures et inputs plus subtils */
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+
+  /* Couleur primaire apaisante (bleu ciel doux) */
+  --primary: 204 80% 63%;
+  --primary-foreground: 210 40% 98%;
+
+  /* Couleur secondaire (bleu très clair) */
+  --secondary: 197 65% 95%;
+  --secondary-foreground: 215 25% 27%;
+
+  /* Couleur d'accent (menthe douce) */
+  --accent: 160 55% 60%;
+  --accent-foreground: 210 40% 98%;
+
+  /* Erreur un peu moins agressive */
+  --destructive: 0 72% 60%;
+  --destructive-foreground: 210 40% 98%;
+
+  /* Focus */
+  --ring: 204 80% 63%;
+
+  /* Coins plus arrondis pour une apparence douce */
+  --radius: 1rem;
+}
+
+.dark {
+  /* Mode sombre ajusté pour être plus apaisant */
+  --background: 215 32% 12%;
+  --foreground: 213 31% 91%;
+  --muted: 215 25% 18%;
+  --muted-foreground: 215 20% 65.1%;
+  --popover: 215 32% 12%;
+  --popover-foreground: 215 20% 65.1%;
+  --card: 215 32% 16%;
+  --card-foreground: 213 31% 91%;
+  --border: 215.4 19.5% 27.5%;
+  --input: 215.4 19.5% 27.5%;
+  
+  /* Couleurs principales ajustées pour le mode sombre */
+  --primary: 204 80% 63%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 215 25% 26.5%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 160 55% 60%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 72% 60%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 204 80% 63%;
+}
 
 @layer base {
   * {
@@ -54,5 +72,87 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Transitions globales pour une expérience plus fluide */
+  button, a, input, select, textarea {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  /* Amélioration des focus pour l'accessibilité */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary/70 ring-offset-2 ring-offset-background rounded-md;
+  }
+  
+  /* Typographie plus lisible */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-medium tracking-tight;
+  }
+  
+  /* Espacement plus généreux */
+  section, .card {
+    @apply mb-6;
+  }
+}
+
+@layer components {
+  /* Ombre douce pour les cartes et éléments */
+  .shadow-soft {
+    box-shadow: 0 5px 20px rgba(71, 119, 187, 0.07), 0 2px 8px rgba(71, 119, 187, 0.04);
+    @apply transition-all duration-300;
+  }
+  
+  .shadow-soft:hover {
+    box-shadow: 0 8px 25px rgba(71, 119, 187, 0.1), 0 3px 10px rgba(71, 119, 187, 0.06);
+  }
+  
+  /* Cartes avec animations subtiles au survol */
+  .card {
+    @apply bg-card rounded-xl border border-border shadow-soft hover:shadow-md transition-all duration-300;
+  }
+  
+  /* Animation de respiration pour certains composants */
+  .animate-breath {
+    animation: breathing 6s ease-in-out infinite;
+  }
+  
+  @keyframes breathing {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.03);
+      opacity: 0.9;
+    }
+  }
+  
+  /* Arrière-plans dégradés pour certaines sections */
+  .bg-calm-gradient {
+    background: linear-gradient(135deg, 
+      hsl(var(--primary) / 0.05) 0%, 
+      hsl(var(--accent) / 0.05) 100%);
+  }
+  
+  /* Animation pour les boutons d'action */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-glow:after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  
+  .btn-glow:hover:after {
+    opacity: 1;
   }
 }

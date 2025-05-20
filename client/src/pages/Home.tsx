@@ -16,9 +16,10 @@ import { useBreathingExercises } from "@/hooks/use-breathing-exercises";
 
 interface HomeProps {
   user: User;
+  isFirstVisit?: boolean;
 }
 
-export default function Home({ user }: HomeProps) {
+export default function Home({ user, isFirstVisit = false }: HomeProps) {
   const { defaultExercise } = useBreathingExercises();
   const [isBreathingModalOpen, setIsBreathingModalOpen] = useState(false);
   const habitsSectionRef = useRef<HTMLDivElement>(null);

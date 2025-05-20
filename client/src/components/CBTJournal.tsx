@@ -171,29 +171,35 @@ export default function CBTJournal({ user }: CBTJournalProps) {
   return (
     <>
       <Card 
-        className="relative cursor-pointer hover:shadow-lg transition-shadow duration-300"
+        className="relative cursor-pointer shadow-soft hover:shadow-md transition-all duration-300 overflow-hidden bg-calm-gradient"
         onClick={() => setIsJournalOpen(true)}
       >
-        <div className="h-32 -mx-px -mt-px mb-5 bg-cover bg-center rounded-t-xl" 
-          style={{ backgroundImage: `url('https://pixabay.com/get/g78d4089f9d659389b4d6c42a99ee29839d28efa3abfd5f98b8a221e6333e14e61595c8d6d1182b996f5cc34e4661a297ec8604986bd53b781a333034860d62db_1280.jpg')` }}>
-        </div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mt-10 -mr-10 z-0"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-accent/5 rounded-full -mb-8 -ml-8 z-0"></div>
         
-        <CardContent>
-          <h2 className="text-lg font-semibold flex items-center">
-            <i className="ri-psychology-line mr-2 text-primary-500"></i>
-            Thought Restructuring
-          </h2>
-          <p className="mt-2 text-gray-600 text-sm">Transform negative thoughts into balanced perspectives through guided CBT.</p>
+        <CardContent className="p-6 relative z-10">
+          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/10 to-primary/20 flex items-center justify-center mb-4">
+            <i className="ri-psychology-line text-primary text-2xl"></i>
+          </div>
           
-          <div className="mt-4 flex justify-between items-center">
+          <h2 className="text-xl font-medium flex items-center mb-3">
+            Restructuration des pensées
+          </h2>
+          
+          <p className="text-muted-foreground">
+            Transformez vos pensées négatives en perspectives équilibrées grâce à un processus guidé par l'IA.
+          </p>
+          
+          <div className="mt-6 flex justify-between items-center">
             <div className="flex items-center">
-              <div className="bg-primary-100 p-1 rounded-full">
-                <i className="ri-shield-star-line text-primary-600"></i>
+              <div className="bg-accent/10 p-1.5 rounded-full">
+                <i className="ri-shield-star-line text-accent"></i>
               </div>
-              <span className="ml-2 text-sm text-gray-700">AI-guided process</span>
+              <span className="ml-2 text-sm">Processus guidé par IA</span>
             </div>
-            <Button className="bg-primary-500 hover:bg-primary-600">
-              Start <i className="ri-arrow-right-line ml-1"></i>
+            
+            <Button className="btn-glow">
+              Commencer <i className="ri-arrow-right-line ml-1"></i>
             </Button>
           </div>
         </CardContent>
