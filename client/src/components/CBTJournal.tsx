@@ -206,204 +206,361 @@ export default function CBTJournal({ user }: CBTJournalProps) {
       </Card>
       
       <Dialog open={isJournalOpen} onOpenChange={(open) => !open && resetForm()}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>CBT Thought Restructuring</DialogTitle>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-background">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-xl">Restructuration des pensées</DialogTitle>
+            <p className="text-muted-foreground text-sm mt-1">Une approche guidée pour transformer vos pensées négatives</p>
             <DialogClose className="absolute right-4 top-4" />
           </DialogHeader>
           
           <div className="py-2">
-            <div className="flex justify-between text-sm mb-4">
-              <div className="flex space-x-4">
-                {stepContent.map((_, index) => (
-                  <div 
-                    key={index}
-                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      index === currentStep 
-                        ? "bg-primary-500 text-white" 
-                        : index < currentStep 
-                          ? "bg-primary-200 text-primary-700" 
-                          : "bg-gray-200 text-gray-500"
-                    }`}
-                  >
-                    {index + 1}
-                  </div>
-                ))}
+            <div className="flex justify-between items-center mb-6 mt-2">
+              <div className="flex-1 relative">
+                <div className="absolute h-1 bg-muted rounded-full w-full top-1/2 transform -translate-y-1/2"></div>
+                <div className="flex justify-between relative z-10">
+                  {stepContent.map((step, index) => (
+                    <div key={index} className="flex flex-col items-center">
+                      <div 
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                          index === currentStep 
+                            ? "bg-primary text-primary-foreground shadow-md scale-110" 
+                            : index < currentStep 
+                              ? "bg-primary/60 text-primary-foreground" 
+                              : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {index < currentStep ? <i className="ri-check-line"></i> : (index + 1)}
+                      </div>
+                      <span className={`text-xs mt-2 transition-all ${index === currentStep ? "text-primary font-medium" : "text-muted-foreground"}`}>
+                        {step.title.split(' ')[0]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <span className="text-gray-500">Step {currentStep + 1} of {stepContent.length}</span>
             </div>
             
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {currentStep === 0 && (
-                  <FormField
-                    control={form.control}
-                    name="situation"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{stepContent[0].title}</FormLabel>
-                        <p className="text-sm text-gray-500 mb-2">{stepContent[0].description}</p>
-                        <FormControl>
-                          <Textarea
-                            placeholder={stepContent[0].placeholder}
-                            rows={5}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                        <i className="ri-map-pin-line text-primary"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg text-foreground">{stepContent[0].title}</h3>
+                        <p className="text-sm text-muted-foreground">{stepContent[0].description}</p>
+                      </div>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="situation"
+                      render={({ field }) => (
+                        <FormItem className="mt-4 bg-card rounded-xl p-4 border border-border shadow-sm">
+                          <FormControl>
+                            <Textarea
+                              placeholder={stepContent[0].placeholder}
+                              rows={5}
+                              className="border-none shadow-none focus-visible:ring-0 bg-transparent resize-none"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="bg-muted/50 rounded-lg p-3 mt-2">
+                      <div className="flex items-start text-sm">
+                        <i className="ri-lightbulb-line text-amber-500 mt-0.5 mr-2"></i>
+                        <p className="text-muted-foreground">
+                          Décrivez brièvement ce qui s'est passé, où vous étiez et ce que vous faisiez quand vous avez ressenti une émotion ou une pensée négative.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 
                 {currentStep === 1 && (
-                  <FormField
-                    control={form.control}
-                    name="emotion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{stepContent[1].title}</FormLabel>
-                        <p className="text-sm text-gray-500 mb-2">{stepContent[1].description}</p>
-                        <FormControl>
-                          <Input
-                            placeholder={stepContent[1].placeholder}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                        <i className="ri-emotion-line text-primary"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg text-foreground">{stepContent[1].title}</h3>
+                        <p className="text-sm text-muted-foreground">{stepContent[1].description}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 bg-card rounded-xl p-5 border border-border shadow-sm">
+                      <p className="mb-3 text-sm font-medium">Émotions fréquentes :</p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {["Anxiété", "Tristesse", "Colère", "Frustration", "Honte", "Culpabilité", "Inquiétude"].map(emotion => (
+                          <button
+                            key={emotion}
+                            type="button"
+                            className="px-3 py-1.5 rounded-full border border-border bg-background hover:bg-primary/5 transition-colors"
+                            onClick={() => {
+                              const currentValue = form.getValues("emotion");
+                              const newValue = currentValue ? `${currentValue}, ${emotion}` : emotion;
+                              form.setValue("emotion", newValue);
+                            }}
+                          >
+                            {emotion}
+                          </button>
+                        ))}
+                      </div>
+                      
+                      <FormField
+                        control={form.control}
+                        name="emotion"
+                        render={({ field }) => (
+                          <FormItem className="mt-2">
+                            <FormControl>
+                              <Input
+                                placeholder={stepContent[1].placeholder}
+                                className="border-primary/20 focus-visible:ring-primary/30"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="bg-muted/50 rounded-lg p-3 mt-2">
+                      <div className="flex items-start text-sm">
+                        <i className="ri-information-line text-primary mt-0.5 mr-2"></i>
+                        <p className="text-muted-foreground">
+                          Nommer vos émotions précisément vous aide à mieux comprendre vos réactions et à gagner en clarté sur votre situation.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 
                 {currentStep === 2 && (
-                  <FormField
-                    control={form.control}
-                    name="thought"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{stepContent[2].title}</FormLabel>
-                        <p className="text-sm text-gray-500 mb-2">{stepContent[2].description}</p>
-                        <FormControl>
-                          <Textarea
-                            placeholder={stepContent[2].placeholder}
-                            rows={5}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="space-y-4">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                        <i className="ri-brain-line text-primary"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-lg text-foreground">{stepContent[2].title}</h3>
+                        <p className="text-sm text-muted-foreground">{stepContent[2].description}</p>
+                      </div>
+                    </div>
+                    
+                    <FormField
+                      control={form.control}
+                      name="thought"
+                      render={({ field }) => (
+                        <FormItem className="mt-4 bg-card rounded-xl p-4 border border-border shadow-sm">
+                          <FormControl>
+                            <Textarea
+                              placeholder={stepContent[2].placeholder}
+                              rows={5}
+                              className="border-none shadow-none focus-visible:ring-0 bg-transparent resize-none"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="bg-muted/50 rounded-lg p-3 mt-2">
+                      <div className="flex items-start text-sm">
+                        <i className="ri-lightbulb-line text-amber-500 mt-0.5 mr-2"></i>
+                        <p className="text-muted-foreground">
+                          Essayez de capturer vos pensées telles qu'elles vous sont venues, sans les juger. Notre IA analysera les schémas de pensée pour vous aider à les transformer.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 
                 {currentStep === 3 && (
                   <div className="space-y-6">
                     {isAnalyzing ? (
-                      <div className="text-center py-8">
-                        <i className="ri-psychology-line text-primary-500 text-4xl animate-pulse"></i>
-                        <p className="mt-4">Analyzing your thoughts...</p>
-                        <p className="text-sm text-gray-500 mt-2">
-                          Our AI is examining your thought patterns and preparing suggestions.
+                      <div className="text-center py-10 px-4">
+                        <div className="w-20 h-20 rounded-full mx-auto bg-primary/10 flex items-center justify-center mb-4 animate-breath">
+                          <i className="ri-psychology-line text-primary text-3xl"></i>
+                        </div>
+                        <h3 className="text-xl font-medium mb-3">Analyse en cours...</h3>
+                        <p className="text-muted-foreground">
+                          Notre IA examine vos schémas de pensée et prépare des suggestions personnalisées.
                         </p>
+                        <div className="mt-8 h-1.5 bg-muted rounded-full w-3/4 mx-auto overflow-hidden">
+                          <div className="h-full bg-primary animate-[progress_2s_ease-in-out_infinite]" style={{width: '60%'}}></div>
+                        </div>
                       </div>
                     ) : (
-                      <>
+                      <div className="space-y-6">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+                            <i className="ri-refresh-line text-primary"></i>
+                          </div>
+                          <div>
+                            <h3 className="font-medium text-lg text-foreground">{stepContent[3].title}</h3>
+                            <p className="text-sm text-muted-foreground">{stepContent[3].description}</p>
+                          </div>
+                        </div>
+                        
                         {aiAnalysis && (
-                          <div className="bg-primary-50 p-4 rounded-lg mb-4">
-                            <h3 className="font-medium text-primary-900 flex items-center">
-                              <i className="ri-robot-line mr-2"></i>
-                              AI Analysis
-                            </h3>
-                            <p className="text-sm text-primary-800 mt-2">
-                              <span className="font-medium">Thought Pattern:</span> {aiAnalysis.thoughtPattern}
-                            </p>
-                            <p className="text-sm text-primary-700 mt-1">
-                              {aiAnalysis.patternExplanation}
-                            </p>
+                          <div className="bg-gradient-to-br from-primary/5 to-primary/10 p-6 rounded-xl mb-4 border border-primary/10 shadow-sm">
+                            <div className="flex items-start">
+                              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center mr-3 mt-0.5">
+                                <i className="ri-robot-line text-primary"></i>
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-foreground">Analyse IA</h4>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  Voici ce que j'ai détecté dans votre pensée.
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-4 ml-11">
+                              <div className="bg-card rounded-lg p-3 border border-border mb-3">
+                                <p className="text-sm font-medium">Schéma de pensée détecté:</p>
+                                <p className="text-primary mt-1 font-medium">{aiAnalysis.thoughtPattern}</p>
+                              </div>
+                              
+                              <p className="text-sm mb-4">
+                                {aiAnalysis.patternExplanation}
+                              </p>
+                            </div>
                           </div>
                         )}
                         
-                        <Tabs defaultValue="challenge">
-                          <TabsList className="w-full">
-                            <TabsTrigger value="challenge" className="w-1/2">Challenge</TabsTrigger>
-                            <TabsTrigger value="reframe" className="w-1/2">Reframe</TabsTrigger>
+                        <Tabs defaultValue="challenge" className="bg-card rounded-xl p-1 border border-border">
+                          <TabsList className="w-full bg-muted/50 p-1 rounded-lg mb-4">
+                            <TabsTrigger value="challenge" className="w-1/2 rounded-md py-2 data-[state=active]:bg-card">
+                              <i className="ri-question-line mr-1.5"></i> Remise en question
+                            </TabsTrigger>
+                            <TabsTrigger value="reframe" className="w-1/2 rounded-md py-2 data-[state=active]:bg-card">
+                              <i className="ri-refresh-line mr-1.5"></i> Reformulation
+                            </TabsTrigger>
                           </TabsList>
                           
-                          <TabsContent value="challenge">
-                            <FormField
-                              control={form.control}
-                              name="challenge"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Challenge Your Thoughts</FormLabel>
-                                  <p className="text-sm text-gray-500 mb-2">
-                                    Question the evidence for your thoughts. Is there another way to look at this?
-                                  </p>
-                                  <FormControl>
-                                    <Textarea
-                                      placeholder={stepContent[3].placeholders[0]}
-                                      rows={4}
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </TabsContent>
-                          
-                          <TabsContent value="reframe">
-                            <FormField
-                              control={form.control}
-                              name="reframe"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Reframe Your Perspective</FormLabel>
-                                  <p className="text-sm text-gray-500 mb-2">
-                                    What's a more balanced or helpful way to think about this situation?
-                                  </p>
-                                  <FormControl>
-                                    <Textarea
-                                      placeholder={stepContent[3].placeholders[1]}
-                                      rows={4}
-                                      {...field}
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </TabsContent>
+                          <div className="px-4 pb-4">
+                            <TabsContent value="challenge" className="mt-0">
+                              <FormField
+                                control={form.control}
+                                name="challenge"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <div className="flex justify-between items-center mb-2">
+                                      <FormLabel className="text-base">Remettez en question vos pensées</FormLabel>
+                                      {aiAnalysis && (
+                                        <button 
+                                          type="button"
+                                          className="text-xs text-primary hover:underline"
+                                          onClick={() => field.onChange(aiAnalysis.challenge)}
+                                        >
+                                          Utiliser la suggestion
+                                        </button>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-2">
+                                      Questionnez les preuves qui soutiennent vos pensées. Y a-t-il une autre façon de voir la situation?
+                                    </p>
+                                    <FormControl>
+                                      <Textarea
+                                        placeholder={stepContent[3]?.placeholders?.[0] || "Quelles preuves contredisent cette pensée? Est-ce que je me concentre uniquement sur le négatif?"}
+                                        rows={4}
+                                        className="bg-muted/30 border-muted focus-visible:border-primary/30 resize-none"
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </TabsContent>
+                            
+                            <TabsContent value="reframe" className="mt-0">
+                              <FormField
+                                control={form.control}
+                                name="reframe"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <div className="flex justify-between items-center mb-2">
+                                      <FormLabel className="text-base">Reformulez votre perspective</FormLabel>
+                                      {aiAnalysis && (
+                                        <button 
+                                          type="button"
+                                          className="text-xs text-primary hover:underline"
+                                          onClick={() => field.onChange(aiAnalysis.reframe)}
+                                        >
+                                          Utiliser la suggestion
+                                        </button>
+                                      )}
+                                    </div>
+                                    <p className="text-sm text-muted-foreground mb-2">
+                                      Quelle serait une façon plus équilibrée ou utile de penser à cette situation?
+                                    </p>
+                                    <FormControl>
+                                      <Textarea
+                                        placeholder={stepContent[3]?.placeholders?.[1] || "Une pensée plus équilibrée pourrait être..."}
+                                        rows={4}
+                                        className="bg-muted/30 border-muted focus-visible:border-primary/30 resize-none"
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </TabsContent>
+                          </div>
                         </Tabs>
-                      </>
+                        
+                        <div className="bg-muted/50 rounded-lg p-3 mt-2">
+                          <div className="flex items-start text-sm">
+                            <i className="ri-information-line text-primary mt-0.5 mr-2"></i>
+                            <p className="text-muted-foreground">
+                              La reformulation n'est pas simplement positive, elle est <span className="font-medium">réaliste</span>. Elle reconnaît les difficultés tout en intégrant les perspectives plus équilibrées.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}
                 
-                <div className="flex justify-between pt-4">
+                <div className="flex justify-between pt-6">
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={handlePreviousStep}
                     disabled={currentStep === 0 || isAnalyzing}
+                    className="px-5"
                   >
-                    Back
+                    <i className="ri-arrow-left-line mr-1.5"></i>
+                    Précédent
                   </Button>
                   <Button 
                     type="button" 
                     onClick={handleNextStep}
                     disabled={isAnalyzing || createJournalMutation.isPending}
+                    className="px-5"
                   >
                     {createJournalMutation.isPending ? (
                       <>
-                        <i className="ri-loader-4-line animate-spin mr-2"></i>
-                        Saving...
+                        <i className="ri-loader-4-line animate-spin mr-1.5"></i>
+                        Enregistrement...
                       </>
                     ) : currentStep === stepContent.length - 1 ? (
-                      "Save Journal"
+                      <>Enregistrer l'entrée <i className="ri-check-line ml-1"></i></>
+                    
                     ) : (
-                      "Next"
+                      <>Continuer <i className="ri-arrow-right-line ml-1.5"></i></>
                     )}
                   </Button>
                 </div>
